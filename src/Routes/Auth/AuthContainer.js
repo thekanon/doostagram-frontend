@@ -10,6 +10,7 @@ export default () => {
     const username = useInput("");
     const firstName = useInput("");
     const lastName = useInput("");
+    const secret = useInput(""); 
     const email = useInput("itnico.las.me@gmail.com");
     const requestSecretMutation = useMutation(LOG_IN, {        
         variables: { email: email.value }
@@ -29,14 +30,20 @@ export default () => {
             // requestSecret[0]();
             if (email.value !== "") {
                 try {
-                    const { requestSecret } = await requestSecretMutation[0]();
+                    const {
+                        data: { requestSecret }
+                    } = await requestSecretMutation[0]();
+                    console.log(requestSecret)
                     if (!requestSecret) {
                         toast.error("You dont have an account yet, create one");
                         setTimeout(() => setAction("signUp"), 3000);
+                    }else {
+                        toast.success("Check your inbox for your login secret");
+                        setAction("confirm");
                     }
-                    } catch {
-                        toast.error("Can't request secret, try again");
-                    }
+                } catch {
+                    toast.error("Can't request secret, try again");
+                }
 
             } else {
                 toast.error("Email is required");
@@ -49,7 +56,9 @@ export default () => {
                 lastName.value !== ""
             ) {
                 try {
-                    const { createAccount } = await createAccountMutation[0]();
+                    const {
+                        data: { createAccount }
+                    } = await createAccountMutation[0]();
                     if (!createAccount) {
                       toast.error("Can't create account");
                     } else {
@@ -73,6 +82,7 @@ export default () => {
             firstName={firstName}
             lastName={lastName}
             email={email}
+            secret={secret}             
             onSubmit={onSubmit} 
         />
     );
